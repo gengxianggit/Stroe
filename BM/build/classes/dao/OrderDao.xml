@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.OrderDao">
+<select id="searchAll" resultMap="order">
+select o.*,phone,a.name as aname,postcode,pro,city,con,street,tag,subtotal,od.num as odnum,a.id as aid,od.id as odid,c.id as cid ,i.id as iid,path,price,c.name as cname
+from   orders as o left join   address as a on(o.address_id=a.id) left join orderdetail as od on(od.order_id=o.id) left join Commodity as c on (od.commodity_id=c.id) left join img as i
+on(i.commodity_id=c.id) where i.order=1   order  by o.id desc
+</select>
+<select id="searchNN" resultMap="order">
+select o.*,phone,a.name as aname,postcode,pro,city,con,street,tag,subtotal,od.num as odnum,a.id as aid,od.id as odid,c.id as cid ,i.id as iid,path,price,c.name as cname
+from   orders as o left join   address as a on(o.address_id=a.id) left join orderdetail as od on(od.order_id=o.id) left join Commodity as c on (od.commodity_id=c.id) left join img as i
+on(i.commodity_id=c.id) where i.order=1 
+<if test="num!=null and num!=''">
+and o.orderName like '%${num}%'
+
+</if>
+<if test="time!=null and time!=''">
+and o.date like '%${num}%'
+
+</if>
+
+
+  order  by o.id desc
+</select>
+<select id="search" resultMap="order">
+select o.*,phone,a.name as aname,postcode,pro,city,con,street,tag,subtotal,od.num as odnum,a.id as aid,od.id as odid,c.id as cid ,i.id as iid,path,price,c.name as cname
+from   orders as o left join   address as a on(o.address_id=a.id) left join orderdetail as od on(od.order_id=o.id) left join Commodity as c on (od.commodity_id=c.id) left join img as i
+on(i.commodity_id=c.id) where i.order=1 and o.id=#{0}  order  by o.id desc 
+</select>
+
+<update id="updateFauo">
+update orders set goodcondition='已发货' where id=#{0}
+
+</update>
+<resultMap type="entity.Order" id="order">
+<id property="id" column="id"/>
+<result property="orderName" column="orderName"/>
+<result property="orderprice" column="orderprice"/>
+<result property="orderNum" column="ordernum"/>
+<result property="date" column="date"/>
+<result property="goodCondition" column="goodcondition"/>
+<result property="payCondition" column="paycondition"/>
+<collection   property="ad" ofType="entity.Address" >
+<id property="id" column="aid"/>
+<result property="name"  column="aname"/>
+<result property="phone"  column="phone"/>
+<result property="postcode"  column="postcode"/>
+<result property="pro"  column="pro"/>
+<result property="con"  column="con"/>
+<result property="tag"  column="tag"/>
+<result property="street"  column="street"/>
+</collection>
+<collection property="odlist" ofType="entity.OrderDetail">
+<id property="id" column="odid"/>
+<result property="num" column="odnum"/>
+<result property="subtotal" column="subtotal"/>
+<collection property="pro" ofType="entity.Production">
+<id property="id" column="cid"/>
+<result property="id" column="cid"/>
+<result property="name" column="cname"/>
+<result property="price" column="price"/>
+<collection property="pictures" ofType="entity.Img">
+<id property="id" column="iid"/>
+<result property="path" column="path"/>
+
+</collection>
+
+</collection>
+</collection>
+
+</resultMap>
+
+  </mapper>
+
+
+
+    

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.UMDao">
+<select id="searchAll" resultType="entity.BmUser">
+select * from user
+
+</select> 
+<select id="searchName" resultType="entity.BmUser">
+select * from user
+<where>
+<if test="name!=null and name!=''">
+ username like '%${name}%' or mail like '%${name}%' or phone like '%${name}%' 
+</if>
+</where>
+</select>
+<delete id="delete">
+delete from user where id in(${ids})
+
+</delete>
+<insert id="add">
+insert into user (username,password,mail,phone,sex)values(#{username},#{password},#{mail},#{phone},#{sex})
+
+
+</insert>
+ </mapper>
+
+
+
+    

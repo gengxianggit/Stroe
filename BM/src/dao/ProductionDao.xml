@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.ProductionDao">
+<select id="searchAll" resultType="entity.Production">select * from commodity</select>
+<select id="search" resultType="entity.Production">select * from commodity 
+<where>
+ <if test="name!=null and name!=''">
+name like '%${name}%'
+</if>
+
+</where>
+
+ </select>
+ <delete id="deleteById">
+ 
+ delete from commodity where id=#{0}
+ </delete>
+ <delete id="deleteLing">
+ 
+ delete from img where commodity_id=0
+ </delete>
+  <delete id="deleteByIdImg">
+ 
+ delete from img where commodity_id=#{0}
+ </delete>
+ <insert id="add">
+ insert into commodity (id,name,price,Inventory,intriduceproduction)values(#{id},#{name},#{price},#{inventory},#{intriduceproduction});
+ 
+ </insert>
+ 
+ 
+  <delete id="deleteByIds">
+ 
+ delete from commodity where id in (${ids})
+ </delete>
+  <delete id="deleteByIdsImg">
+ 
+ delete from img where commodity_id in (${ids})
+ </delete>
+ 
+ <insert id="addImg">
+ 
+ insert into img (path,img.order)values(#{path},#{order});
+ </insert>
+ <delete id="deleteImg">
+ delete from img where path=#{path}
+ 
+ </delete>
+ <update id="addImgPId">
+ update img set commodity_id=#{0} where commodity_id=0;
+ 
+ </update>
+ <select id="searchProduction" resultMap="searchProduction">
+ 	select c.*,i.path as ipath,i.order as iorder ,commodity_id,i.id as iId from commodity as c left join Img as i on (commodity_id=c.id)
+	where c.id=#{0}
+ 
+ </select>
+ <update id="updateProduction">
+ update commodity set name=#{name},price=#{price},Inventory=#{inventory},intriduceproduction=#{intriduceproduction} where id=#{id};
+ 
+ </update>
+ 
+  <update id="updateImgOrder" >
+  update img set img.order=#{order} where path=#{path};
+ 
+ </update>
+ <select id="searchImg" resultType="entity.Img">
+ select * from img where commodity_id in (${ids})
+ 
+ </select>
+ <select id="searchAllUser" resultType="int">
+ 
+ select count(*) from user
+ </select>
+ <select id="searchAllOrder" resultType="int">
+ 
+ select count(*) from orders
+ </select>
+ <select id="searchAllPay" resultType="int">
+ 
+ select sum(subtotal) from orderdetail
+ </select>
+ <resultMap type="entity.Production" id="searchProduction">
+<id property="id" column="id"/>
+<result property="name" column="name"/>
+<result property="price" column="price"/>
+<result property="inventory" column="Inventory"/>
+<result property="salenum" column="salenum"/>
+<result property="intriduceproduction" column="intriduceproduction"/>
+ <collection property="pictures"  ofType="entity.Img">
+<id property="id" column="iId"/>
+<result property="path" column="ipath"/>
+<result property="order" column="iorder"/>
+
+
+</collection>
+
+</resultMap>
+ </mapper>
+
+
+
+    
