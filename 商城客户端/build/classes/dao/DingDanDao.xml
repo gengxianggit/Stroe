@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="dao.DingDanDao">
+
+<insert id="addOrder" useGeneratedKeys="true" keyProperty="id" >
+insert into orders (ordername,orderprice,ordernum,date,user_id,address_id)values(#{orderName},#{orderprice},#{orderNum},#{date},#{userId},#{addressId})
+
+
+</insert>
+<select id="searchByIds" resultMap="cart">
+select sc.*,scd.num as num,scd.id as scdId,scd.subtotal as subtotal,scd.commodity_id as scd_c_id,shopcart_id,c.id as cid,name,price,Inventory,intriduceproduction ,i.id as iid,path, i.commodity_id as i_c_id, i.order as iorder  from shopcart as sc left join shopcartdetail as scd  on(sc.id=scd.shopcart_id) left  join commodity as c on(scd.commodity_id=c.id)
+left join img as i on (i.commodity_id=c.id)where i.order=1 and sc.user_id=#{userId} and c.id in (${ids})
+</select>	
+<select id="searchP" resultType="entity.Province">
+
+select * from t_province
+
+</select>
+<select id="searchCity" resultType="entity.City">
+select c.* from t_province as p left join t_city as c on(c.father=p.provinceID) where p.province=#{0};
+
+</select>
+<select id="searchCounty" resultType="entity.Area">
+select a.* from  t_city   as c left join t_area as a on(a.father=c.cityID) where c.city=#{0} ;
+
+</select>
+
+<select id="searchAddress"  resultType="entity.Address">
+select * from address where  userId=#{0};
+</select>
+<insert id="addAdress">
+insert into address(name,phone,postcode,pro,city,con,street,userId,tag) values(#{ad.name},#{ad.phone},#{ad.postcode},#{ad.pro},#{ad.city},#{ad.con},#{ad.street},#{1},#{ad.tag})
+
+</insert>
+<select id="searchOrder" resultMap="order">
+select o.*,phone,a.name as aname,postcode,pro,city,con,street,tag,subtotal,od.num as odnum,a.id as aid,od.id as odid,c.id as cid ,i.id as iid,path,price,c.name as cname
+from   orders as o left join   address as a on(o.address_id=a.id) left join orderdetail as od on(od.order_id=o.id) left join Commodity as c on (od.commodity_id=c.id) left join img as i
+on(i.commodity_id=c.id) where i.order=1 and o.user_id=#{0}  order  by o.id desc
+
+
+</select>
+<insert id="addOrderDetail">
+insert into orderdetail (num,subtotal,order_id,commodity_id)values(#{sc.num},#{sc.subtotal},#{1},#{sc.commodityId})
+
+</insert>
+<delete id="deleteAddress">
+
+delete from address where id=#{0}
+
+</delete>
+<delete id="deleteorder">
+delete from orders where id=#{0}
+
+</delete>
+
+<delete id="deleteorderdetail">
+delete from orderdetail where order_id=#{0};
+</delete>
+
+
+<resultMap type="entity.ShopCart" id="cart">
+<id property="id" column="id"/>
+<result property="sumCount" column="sumCount"/>
+<result property="userId" column="user_id"/>
+<collection property="scdList" ofType="entity.ShopCartDetail">
+<id  property="id" column="scdId"/>
+<result property="num" column="num"/>
+<result property="subtotal" column="subtotal"/>
+<result property="commodityId" column=" scd_c_id"/>
+<result property="shopCartId" column=" shopcart_id"/>
+<association property="comm" javaType="entity.Commodity">
+<id property="id" column="cid"/>
+<result property="name" column="name"/>
+<result property="price" column="price"/>
+<result property="Inventory" column="Inventory" />
+<result property="intriduceproduction" column="intriduceproduction"/>
+ <collection property="pictures"  ofType="entity.Img">
+<id property="id" column="iid"/>
+<result property="path" column="path"/>
+<result property="order" column="iorder"/>
+</collection>
+</association>
+</collection>
+</resultMap>
+
+
+
+<resultMap type="entity.Order" id="order">
+<id property="id" column="id"/>
+<result property="orderName" column="orderName"/>
+<result property="orderprice" column="orderprice"/>
+<result property="orderNum" column="orderNum"/>
+<result property="date" column="date"/>
+<collection   property="ad" ofType="entity.Address" >
+<id property="id" column="aid"/>
+<result property="name"  column="aname"/>
+<result property="phone"  column="phone"/>
+<result property="postcode"  column="postcode"/>
+<result property="pro"  column="pro"/>
+<result property="con"  column="con"/>
+<result property="tag"  column="tag"/>
+<result property="street"  column="street"/>
+</collection>
+<collection property="odlist" ofType="entity.OrderDetail">
+<id property="id" column="odid"/>
+<result property="num" column="odnum"/>
+<result property="subtotal" column="subtotal"/>
+<collection property="commodity" ofType="entity.Commodity">
+<id property="id" column="cid"/>
+<result property="id" column="cid"/>
+<result property="name" column="cname"/>
+<result property="price" column="price"/>
+<collection property="pictures" ofType="entity.Img">
+<id property="id" column="iid"/>
+<result property="path" column="path"/>
+
+</collection>
+
+</collection>
+</collection>
+
+</resultMap>
+
+</mapper>

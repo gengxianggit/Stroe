@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.CartDao">
+
+<select id="searchCart" resultMap="cart">
+
+select sc.*,scd.num as num,scd.id as scdId,scd.subtotal as subtotal,scd.commodity_id as scd_c_id,shopcart_id,c.id as cid,name,price,Inventory,intriduceproduction ,i.id as iid,path, i.commodity_id as i_c_id, i.order as iorder  from shopcart as sc left join shopcartdetail as scd  on(sc.id=scd.shopcart_id) left  join commodity as c on(scd.commodity_id=c.id)
+left join img as i on (i.commodity_id=c.id)where i.order=1 and sc.user_id=#{0}
+
+</select>
+<resultMap type="entity.ShopCart" id="cart">
+<id property="id" column="id"/>
+<result property="sumCount" column="sumCount"/>
+<result property="userId" column="user_id"/>
+<collection property="scdList" ofType="entity.ShopCartDetail">
+<id  property="id" column="scdId"/>
+<result property="num" column="num"/>
+<result property="subtotal" column="subtotal"/>
+<result property="commodityId" column=" scd_c_id"/>
+<result property="shopCartId" column=" shopcart_id"/>
+<association property="comm" javaType="entity.Commodity">
+<id property="id" column="cid"/>
+<result property="name" column="name"/>
+<result property="price" column="price"/>
+<result property="Inventory" column="Inventory" />
+<result property="intriduceproduction" column="intriduceproduction"/>
+ <collection property="pictures"  ofType="entity.Img">
+<id property="id" column="iid"/>
+<result property="path" column="path"/>
+<result property="order" column="iorder"/>
+</collection>
+</association>
+</collection>
+</resultMap>
+<insert id="add">
+insert into  shopcartdetail (subtotal,shopcart_id,commodity_id,num)values(#{subtotal},#{1},#{comm.id},#{2}); 
+
+</insert>
+
+<select id="searchCartId" resultType="int">
+
+select id from shopcart where user_id=#{0}
+</select>
+
+<delete id="deleteCart">
+
+delete from shopcartdetail where commodity_id=#{0} and shopcart_id=#{1};
+
+</delete>
+
+<select id="serachCommodityId" resultType="int">
+select ifNull(count(*),0) from shopcartdetail where commodity_id=#{1} and shopcart_id=#{0}
+</select>
+<update id="updateCart">
+
+update shopcartdetail set num=num+#{1} where  commodity_id=#{0}
+
+</update>
+
+ <select id="serachCommodityIdNum" resultType="int">
+select count(*) from shopcartdetail where shopcart_id=#{0}
+</select>
+<update id="updateNum" >
+update shopcartdetail set num=#{0},subtotal=#{2} where id=#{1};
+
+
+</update>
+<select id="searchSc" resultMap="sc">
+
+select * from shopcartdetail where shopcart_id=#{1} and commodity_id in (${ids})
+
+</select>
+<delete id="deleteCartDetail">
+
+delete from shopcartdetail where shopcart_id=#{1} and commodity_id in (${ids});
+</delete>
+<resultMap type="entity.ShopCartDetail" id="sc">
+<id property="id" column="id"/>
+<result property="num"  column="num"/>
+<result property="subtotal"  column="subtotal"/>
+<result property="commodityId"  column="commodity_id"/>
+<result property="shopcart_id"  column="shopCartId"/>
+
+
+</resultMap>
+</mapper>
