@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.DepartmentDao">
+	<select id="searchDepCount"  resultType="java.lang.Integer">
+		select count(*) from department
+		<where>
+			<if test="name!=null and name!=''">and name like '%${name}%'</if>
+			<if test="num!=null "> and num=#{num}</if>
+	</where>
+	</select>
+
+
+	<select id="search" resultType="entity.Department">
+
+		select * from Department 
+		<where>
+		<if test="dep.name!=null and dep.name!=''">and name like '%${dep.name}%'</if>
+			<if test="dep.num!=null "> and num=#{dep.num}</if>
+			
+		</where>
+		limit #{1},#{2}
+	</select>
+	<insert id="add">
+		insert into department
+		(name)values(#{name})
+	</insert>
+	<select id="searchDepById" resultType="entity.Department">
+		select *  from department where id=#{1}
+
+	</select>
+	<update id="update">
+		update department set name=#{name} 
+		where id=#{id}
+</update>
+	<delete id="delete">
+		delete from department where id in (#{ids})
+
+	</delete>
+
+</mapper> 
+
+
+
+    

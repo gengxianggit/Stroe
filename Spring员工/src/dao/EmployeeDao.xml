@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.EmployeeDao">
+<resultMap id="employeeResultMap" type="entity.Employee">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="sex" column="sex" />
+		<result property="age" column="age" />
+		<result property="img" column="img" />
+		<association property="dep" javaType="entity.Department">
+		<id property="id" column="did"/>
+		<result property="name" column="dName"/>
+		
+		
+		</association>
+	</resultMap>
+	
+	
+	<select id="searchCount"  resultType="java.lang.Integer">
+		select count(*) from Employee 
+		<where>
+		<if test="name!=null and name!=''">and name like '%${name}%'</if>
+			<if test="sex!=null and sex!=''"> and sex=#{sex}</if>
+			<if test="age!=null">and age=#{age}</if>
+			<if test="dep !=null and dep.id!=null">and e_id=#{dep.id}</if>
+			
+			
+	</where>
+	</select>
+
+     <select id="searchCountDep" resultType="entity.Department">
+     select * from department 
+     
+     </select>
+	<select id="search" resultMap="employeeResultMap">
+
+		select img ,e.* ,d.id as did,d.name as dName from Employee as e left join department as d on(e.e_id=d.id )
+		<where>
+		<if test="emp.name!=null and emp.name!=''">and  e.name like '%${emp.name}%'</if>
+			<if test="emp.sex!=null and emp.sex!=''"> and sex=#{emp.sex}</if>
+			<if test="emp.age!=null">and age=#{emp.age}</if>
+			<if test="emp.dep !=null and emp.dep.id!=null">and e_id=#{emp.dep.id}</if>
+			 
+			
+		</where>
+		limit #{1},#{2}
+	</select>
+	<insert id="add">
+      insert into employee(name,sex,age,e_id,img)values(#{name},#{sex},#{age},#{dep.id},#{img})
+	</insert>
+	<select id="searchEmpById" resultMap="employeeResultMap">
+select img ,e.* ,d.id as did,d.name as dname from Employee as e left join department as d on(e.e_id=d.id )
+ where e.id=#{1}
+
+	</select>
+	<update id="update">
+		update employee set name=#{name},sex=#{sex},age=#{age},e_id=#{dep.id} 
+		where id=#{id}
+</update>
+	<update id="updateList" parameterType="List">
+ <foreach collection="list" item="emp" separator=";">
+ update employee set name=#{emp.name},sex=#{emp.sex},age=#{emp.age},e_id=#{emp.dep.id} 
+		where id=#{emp.id}
+ 
+ 
+ </foreach>
+</update>
+	<delete id="delete">
+		delete from employee where id in (${ids})
+
+	</delete>
+<update id="updateByDepId">
+		update employee set e_id=null 
+		where id in (${ids})
+</update>
+	
+
+</mapper> 
+
+
+
+    
